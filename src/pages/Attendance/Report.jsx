@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar"; // optional for date picker
-import { getAttendanceReport } from "@/api/attendance";
+import { Button, Card, Table, DatePicker, Statistic, Row, Col, Spin } from "antd";
+import { getAttendanceReport } from "../../api/attendance";
 import { format } from "date-fns";
+
+const { RangePicker } = DatePicker;
 
 const AttendanceReport = () => {
   const [data, setData] = useState([]);
   const [dateRange, setDateRange] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchReport = useCallback(async () => {
     if (dateRange.length !== 2) return;
     try {
+      setLoading(true);
       const report = await getAttendanceReport(
         'current-user-id',
         format(dateRange[0], 'yyyy-MM-dd'),
@@ -21,6 +22,8 @@ const AttendanceReport = () => {
       setData(report);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }, [dateRange]);
 
@@ -35,64 +38,108 @@ const AttendanceReport = () => {
     return acc;
   }, { present: 0, absent: 0, halfDay: 0 });
 
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        const color = status === 'Present' ? 'green' : status === 'Absent' ? 'red' : 'orange';
+        return (
+          <span style={{
+            padding: '4px 8px',
+            borderRadius: '4px',
+            backgroundColor: color === 'green' ? '#f6ffed' : color === 'red' ? '#fff2f0' : '#fff7e6',
+            color: color === 'green' ? '#52c41a' : color === 'red' ? '#ff4d4f' : '#fa8c16',
+            border: `1px solid ${color === 'green' ? '#b7eb8f' : color === 'red' ? '#ffb3b3' : '#ffd591'}`
+          }}>
+            {status}
+          </span>
+        );
+      }
+    },
+    {
+      title: 'Check In',
+      dataIndex: 'checkIn',
+      key: 'checkIn',
+    },
+    {
+      title: 'Check Out',
+      dataIndex: 'checkOut',
+      key: 'checkOut',
+    },
+    {
+      title: 'Hours',
+      dataIndex: 'hours',
+      key: 'hours',
+    },
+    {
+      title: 'Overtime',
+      dataIndex: 'overtime',
+      key: 'overtime',
+    },
+  ];
+
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Attendance Report</h1>
+    <div style={{ padding: '24px' }}>
+      <h1 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '24px' }}>
+        Attendance Report
+      </h1>
 
-      <div className="flex items-center gap-4">
-        <Calendar
-          mode="range"
-          selected={dateRange}
-          onSelect={setDateRange}
-          className="border rounded-md"
+      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <RangePicker
+          onChange={(dates) => setDateRange(dates || [])}
+          style={{ marginRight: '16px' }}
         />
-        <Button disabled={!data.length}>Export</Button>
+        <Button type="primary" disabled={!data.length}>
+          Export
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4">
-          <p className="text-muted-foreground">Present Days</p>
-          <p className="text-xl font-bold text-green-600">{stats.present}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground">Absent Days</p>
-          <p className="text-xl font-bold text-red-600">{stats.absent}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground">Half Days</p>
-          <p className="text-xl font-bold text-yellow-500">{stats.halfDay}</p>
-        </Card>
-      </div>
+      <Row gutter={16} style={{ marginBottom: '24px' }}>
+        <Col span={8}>
+          <Card>
+            <Statistic
+              title="Present Days"
+              value={stats.present}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Statistic
+              title="Absent Days"
+              value={stats.absent}
+              valueStyle={{ color: '#ff4d4f' }}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card>
+            <Statistic
+              title="Half Days"
+              value={stats.halfDay}
+              valueStyle={{ color: '#fa8c16' }}
+            />
+          </Card>
+        </Col>
+      </Row>
 
-      <Card className="p-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Check In</TableHead>
-              <TableHead>Check Out</TableHead>
-              <TableHead>Hours</TableHead>
-              <TableHead>Overtime</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row, i) => (
-              <TableRow key={i}>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>
-                  <span className={`rounded px-2 py-1 text-xs ${row.status === 'Present' ? 'bg-green-100 text-green-800' : row.status === 'Absent' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {row.status}
-                  </span>
-                </TableCell>
-                <TableCell>{row.checkIn}</TableCell>
-                <TableCell>{row.checkOut}</TableCell>
-                <TableCell>{row.hours}</TableCell>
-                <TableCell>{row.overtime}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <Card>
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey={(record, index) => index}
+            pagination={{ pageSize: 10 }}
+          />
+        </Spin>
       </Card>
     </div>
   );
