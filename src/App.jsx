@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store';
 // import AuthProvider from './contexts/AuthContext';
-import AuthProvider from './contexts/AuthContext.jsx';
+import { AuthProvider } from './contexts/AuthContext.jsx';
 import Layout from './components/common/Layout';
 import Dashboard from './pages/Dashboard/Dashboard.jsx';
 import EmployeeList from './pages/Employees/Employee.jsx';
