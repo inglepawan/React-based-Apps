@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,14 +7,12 @@ import { getAttendanceReport } from "@/api/attendance";
 import { format } from "date-fns";
 
 const AttendanceReport = () => {
-  const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [dateRange, setDateRange] = useState([]);
 
-  const fetchReport = async () => {
+  const fetchReport = useCallback(async () => {
     if (dateRange.length !== 2) return;
     try {
-      setLoading(true);
       const report = await getAttendanceReport(
         'current-user-id',
         format(dateRange[0], 'yyyy-MM-dd'),
@@ -23,16 +21,14 @@ const AttendanceReport = () => {
       setData(report);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [dateRange]);
 
   useEffect(() => {
     if (dateRange.length === 2) {
       fetchReport();
     }
-  }, [dateRange]);
+  }, [dateRange, fetchReport]);
 
   const stats = data.reduce((acc, rec) => {
     if (rec.status === "Present") acc.present++;
