@@ -6,8 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:analyze": "vite build --mode analyze",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "start": "npm run dev",
+    "type-check": "echo 'TypeScript not configured'",
+    "test": "echo 'Tests not configured yet'",
+    "clean": "rm -rf dist node_modules/.vite",
+    "deps:check": "npm audit",
+    "deps:update": "npm update",
+    "serve:build": "npm run build && npm run preview",
+    "format": "echo 'Prettier not configured'",
+    "analyze": "npm run build && npx vite-bundle-analyzer"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../utils/logger.js';
 
 const API_URL = 'http://localhost:3001/auth'; // JSON Server endpoint
 
@@ -9,7 +10,7 @@ export const login = async (email, password) => {
     const response = await axios.post(`${API_URL}/login`, { email, password });
     return response.data;
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -20,7 +21,7 @@ export const register = async (userData) => {
     const response = await axios.post(`${API_URL}/register`, userData);
     return response.data;
   } catch (error) {
-    console.error('Registration error:', error);
+    logger.error('Registration error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -30,7 +31,7 @@ export const logout = async () => {
     // Simulate logout
     await axios.post(`${API_URL}/logout`);
   } catch (error) {
-    console.error('Logout error:', error);
+    logger.error('Logout error:', error.response?.data || error.message);
     throw error;
   }
 };
@@ -41,7 +42,7 @@ export const getCurrentUser = async () => {
     const response = await axios.get(`${API_URL}/me`);
     return response.data;
   } catch (error) {
-    console.error('Get current user error:', error);
+    logger.error('Get current user error:', error.response?.data || error.message);
     throw error;
   }
 };

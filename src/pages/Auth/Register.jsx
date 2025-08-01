@@ -15,7 +15,7 @@ const Register = () => {
       await register(values);
       message.success('Registration successful! Please login.');
       navigate('/login');
-    } catch (error) {
+    } catch {
       message.error('Registration failed. Please try again.');
     } finally {
       setLoading(false);
