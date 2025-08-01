@@ -15,7 +15,7 @@ export default defineConfig({
           mui: ['@mui/material', '@mui/icons-material', '@mui/x-date-pickers'],
           calendar: ['@fullcalendar/react', '@fullcalendar/core', '@fullcalendar/daygrid', '@fullcalendar/timegrid', '@fullcalendar/interaction', '@fullcalendar/list'],
           charts: ['chart.js', 'react-chartjs-2', 'recharts'],
-          firebase: ['firebase', '@firebase/auth', '@firebase/firestore'],
+          firebase: ['@firebase/auth', '@firebase/firestore'],
           forms: ['formik', 'yup'],
           redux: ['@reduxjs/toolkit', 'react-redux', 'redux-persist'],
           utils: ['axios', 'date-fns']
@@ -28,5 +28,8 @@ export default defineConfig({
     alias: {
       '@': '/src'
     }
+  },
+  optimizeDeps: {
+    include: ['firebase/app', 'firebase/auth', 'firebase/firestore']
   }
 })
