@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Button, Card, Table, DatePicker, Statistic, Row, Col, Spin } from "antd";
 import { getAttendanceReport } from "../../api/attendance";
 import { format } from "date-fns";
+import logger from "../../utils/logger.js";
 
 const { RangePicker } = DatePicker;
 
@@ -21,7 +22,7 @@ const AttendanceReport = () => {
       );
       setData(report);
     } catch (error) {
-      console.error(error);
+      logger.error('Failed to fetch attendance report:', error);
     } finally {
       setLoading(false);
     }

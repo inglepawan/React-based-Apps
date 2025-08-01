@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import logger from '../../utils/logger.js';
 
 const LiveClock = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -22,7 +23,7 @@ const LiveClock = () => {
 
   const handleClockInOut = () => {
     setIsClockedIn(!isClockedIn);
-    console.log(isClockedIn ? 'Clocked Out' : 'Clocked In');
+    logger.info(isClockedIn ? 'User clocked out' : 'User clocked in');
   };
 
   return (
