@@ -1,0 +1,42 @@
+.calendar-widget {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-widget .fc {
+  font-family: inherit;
+}
+
+.calendar-widget .fc-toolbar-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calendar-widget .fc-button {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.calendar-widget .fc-button:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.calendar-widget .fc-button:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.calendar-widget .fc-event {
+  border-radius: 4px;
+  font-size: 0.875rem;
+  padding: 2px 4px;
+}
+
+.calendar-widget .fc-daygrid-event {
+  white-space: nowrap;
+  border-radius: 3px;
+}

@@ -4,7 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { Button, Alert, Input } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 
 const Login = () => {
   const { login } = useAuth();
@@ -25,7 +25,7 @@ const Login = () => {
     try {
       await login(values.email, values.password);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Invalid email or password');
       setSubmitting(false);
     }
