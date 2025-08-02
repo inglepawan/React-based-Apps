@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Table, 
   Input, 
@@ -30,7 +30,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const { Search } = Input;
 
 const EmployeeList = () => {
-  const [employees, setEmployees] = useState([
+  const [employees] = useState([
     {
       id: 1,
       name: 'John Doe',
@@ -92,7 +92,7 @@ const EmployeeList = () => {
       salary: 72000
     }
   ]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
 
@@ -111,9 +111,7 @@ const EmployeeList = () => {
     );
   });
 
-  const getStatusColor = (status) => {
-    return status === 'Active' ? 'green' : 'red';
-  };
+
 
   const getDepartmentColor = (department) => {
     const colors = {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, Badge } from 'antd';
 import {
   DashboardOutlined,
@@ -16,7 +16,6 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
 
   const getMenuKey = () => {
     const path = location.pathname;

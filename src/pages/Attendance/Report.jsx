@@ -6,7 +6,7 @@ import { format } from "date-fns";
 const { RangePicker } = DatePicker;
 
 const AttendanceReport = () => {
-  const [data, setData] = useState([
+  const [data] = useState([
     {
       key: 1,
       date: '2024-12-01',
