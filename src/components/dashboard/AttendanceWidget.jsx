@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Progress, Card, Statistic, Row, Col, Badge } from 'antd';
 import { 
   CheckCircleOutlined, 
@@ -9,14 +9,13 @@ import {
 } from '@ant-design/icons';
 
 const AttendanceWidget = () => {
-  const [attendance, setAttendance] = useState({ 
+  const [attendance] = useState({ 
     present: 142, 
     absent: 14, 
     late: 8,
     total: 156 
   });
   const [isClockedIn, setIsClockedIn] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleClockInOut = () => {
     setIsClockedIn(!isClockedIn);
