@@ -1,26 +1,71 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar"; // optional for date picker
-import { getAttendanceReport } from "@/api/attendance";
+import { Card, Table, Button, Row, Col, Statistic, DatePicker, Badge } from "antd";
+import { CalendarOutlined, DownloadOutlined, BarChartOutlined } from "@ant-design/icons";
 import { format } from "date-fns";
 
+const { RangePicker } = DatePicker;
+
 const AttendanceReport = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([
+    {
+      key: 1,
+      date: '2024-12-01',
+      status: 'Present',
+      checkIn: '08:30 AM',
+      checkOut: '05:30 PM',
+      hours: '9.0',
+      overtime: '0.5'
+    },
+    {
+      key: 2,
+      date: '2024-12-02',
+      status: 'Present',
+      checkIn: '08:45 AM',
+      checkOut: '05:15 PM',
+      hours: '8.5',
+      overtime: '0.0'
+    },
+    {
+      key: 3,
+      date: '2024-12-03',
+      status: 'Absent',
+      checkIn: '-',
+      checkOut: '-',
+      hours: '0.0',
+      overtime: '0.0'
+    },
+    {
+      key: 4,
+      date: '2024-12-04',
+      status: 'Present',
+      checkIn: '08:15 AM',
+      checkOut: '05:45 PM',
+      hours: '9.5',
+      overtime: '1.0'
+    },
+    {
+      key: 5,
+      date: '2024-12-05',
+      status: 'Half Day',
+      checkIn: '08:30 AM',
+      checkOut: '01:30 PM',
+      hours: '5.0',
+      overtime: '0.0'
+    }
+  ]);
   const [dateRange, setDateRange] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchReport = useCallback(async () => {
     if (dateRange.length !== 2) return;
+    setLoading(true);
     try {
-      const report = await getAttendanceReport(
-        'current-user-id',
-        format(dateRange[0], 'yyyy-MM-dd'),
-        format(dateRange[1], 'yyyy-MM-dd')
-      );
-      setData(report);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   }, [dateRange]);
 
@@ -37,64 +82,159 @@ const AttendanceReport = () => {
     return acc;
   }, { present: 0, absent: 0, halfDay: 0 });
 
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Attendance Report</h1>
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Present': return 'success';
+      case 'Absent': return 'error';
+      case 'Half Day': return 'warning';
+      default: return 'default';
+    }
+  };
 
-      <div className="flex items-center gap-4">
-        <Calendar
-          mode="range"
-          selected={dateRange}
-          onSelect={setDateRange}
-          className="border rounded-md"
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      render: (date) => format(new Date(date), 'MMM dd, yyyy')
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => (
+        <Badge 
+          status={getStatusColor(status)} 
+          text={
+            <span className={`font-medium ${
+              status === 'Present' ? 'text-green-600' : 
+              status === 'Absent' ? 'text-red-600' : 'text-yellow-600'
+            }`}>
+              {status}
+            </span>
+          } 
         />
-        <Button disabled={!data.length}>Export</Button>
+      )
+    },
+    {
+      title: 'Check In',
+      dataIndex: 'checkIn',
+      key: 'checkIn',
+      render: (time) => time !== '-' ? time : <span className="text-gray-400">-</span>
+    },
+    {
+      title: 'Check Out',
+      dataIndex: 'checkOut',
+      key: 'checkOut',
+      render: (time) => time !== '-' ? time : <span className="text-gray-400">-</span>
+    },
+    {
+      title: 'Hours',
+      dataIndex: 'hours',
+      key: 'hours',
+      render: (hours) => <span className="font-medium">{hours}h</span>
+    },
+    {
+      title: 'Overtime',
+      dataIndex: 'overtime',
+      key: 'overtime',
+      render: (overtime) => (
+        <span className={`font-medium ${overtime > 0 ? 'text-blue-600' : 'text-gray-400'}`}>
+          {overtime}h
+        </span>
+      )
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Attendance Report</h1>
+          <p className="text-gray-600 mt-1">Track and analyze employee attendance patterns</p>
+        </div>
+        <Button 
+          type="primary" 
+          icon={<DownloadOutlined />}
+          size="large"
+          className="bg-blue-600 hover:bg-blue-700 border-blue-600"
+        >
+          Export Report
+        </Button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4">
-          <p className="text-muted-foreground">Present Days</p>
-          <p className="text-xl font-bold text-green-600">{stats.present}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground">Absent Days</p>
-          <p className="text-xl font-bold text-red-600">{stats.absent}</p>
-        </Card>
-        <Card className="p-4">
-          <p className="text-muted-foreground">Half Days</p>
-          <p className="text-xl font-bold text-yellow-500">{stats.halfDay}</p>
-        </Card>
-      </div>
+      {/* Date Range Picker */}
+      <Card>
+        <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
+          <div className="flex items-center space-x-2">
+            <CalendarOutlined className="text-blue-500" />
+            <span className="font-medium text-gray-700">Select Date Range:</span>
+          </div>
+          <RangePicker 
+            size="large"
+            onChange={(dates) => setDateRange(dates)}
+            className="w-full md:w-auto"
+          />
+          <Button 
+            type="primary" 
+            loading={loading}
+            onClick={fetchReport}
+            disabled={dateRange.length !== 2}
+          >
+            Generate Report
+          </Button>
+        </div>
+      </Card>
 
-      <Card className="p-4">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Check In</TableHead>
-              <TableHead>Check Out</TableHead>
-              <TableHead>Hours</TableHead>
-              <TableHead>Overtime</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((row, i) => (
-              <TableRow key={i}>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>
-                  <span className={`rounded px-2 py-1 text-xs ${row.status === 'Present' ? 'bg-green-100 text-green-800' : row.status === 'Absent' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                    {row.status}
-                  </span>
-                </TableCell>
-                <TableCell>{row.checkIn}</TableCell>
-                <TableCell>{row.checkOut}</TableCell>
-                <TableCell>{row.hours}</TableCell>
-                <TableCell>{row.overtime}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      {/* Statistics Cards */}
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={8}>
+          <Card className="text-center hover:shadow-md transition-shadow">
+            <Statistic
+              title="Present Days"
+              value={stats.present}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={<BarChartOutlined className="text-green-500" />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card className="text-center hover:shadow-md transition-shadow">
+            <Statistic
+              title="Absent Days"
+              value={stats.absent}
+              valueStyle={{ color: '#ff4d4f' }}
+              prefix={<BarChartOutlined className="text-red-500" />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={8}>
+          <Card className="text-center hover:shadow-md transition-shadow">
+            <Statistic
+              title="Half Days"
+              value={stats.halfDay}
+              valueStyle={{ color: '#faad14' }}
+              prefix={<BarChartOutlined className="text-yellow-500" />}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Attendance Table */}
+      <Card title="Detailed Attendance Records" className="shadow-sm">
+        <Table 
+          columns={columns} 
+          dataSource={data} 
+          loading={loading}
+          pagination={{ 
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} records`
+          }}
+          className="custom-table"
+        />
       </Card>
     </div>
   );

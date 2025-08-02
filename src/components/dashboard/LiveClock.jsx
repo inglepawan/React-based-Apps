@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Card, Button, Badge } from 'antd';
+import { ClockCircleOutlined, LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 
 const LiveClock = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -26,22 +28,71 @@ const LiveClock = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-zinc-900 shadow-lg rounded-2xl p-6 flex flex-col items-center space-y-4 border border-zinc-200 dark:border-zinc-700 transition-all duration-300">
-      <h3 className="text-xl font-semibold text-zinc-800 dark:text-zinc-100">Live Clock</h3>
-      <div className="text-4xl font-mono font-bold text-blue-600 dark:text-blue-400 tracking-wider">
-        {hours}:{minutes}:{seconds}
+    <Card 
+      title={
+        <div className="flex items-center space-x-2">
+          <ClockCircleOutlined className="text-blue-500" />
+          <span>Live Clock</span>
+        </div>
+      }
+      className="h-full"
+    >
+      <div className="text-center space-y-6">
+        {/* Time Display */}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6">
+          <div className="text-4xl font-mono font-bold text-blue-600 tracking-wider mb-2">
+            {hours}:{minutes}:{seconds}
+          </div>
+          <div className="text-sm text-gray-600">
+            {currentTime.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </div>
+        </div>
+
+        {/* Status Badge */}
+        <div className="flex justify-center">
+          <Badge 
+            status={isClockedIn ? "success" : "default"} 
+            text={
+              <span className={`font-medium ${isClockedIn ? 'text-green-600' : 'text-gray-500'}`}>
+                {isClockedIn ? 'Currently Clocked In' : 'Not Clocked In'}
+              </span>
+            } 
+          />
+        </div>
+
+        {/* Clock In/Out Button */}
+        <Button
+          type="primary"
+          size="large"
+          icon={isClockedIn ? <LogoutOutlined /> : <LoginOutlined />}
+          onClick={handleClockInOut}
+          className={`w-full h-12 text-base font-medium ${
+            isClockedIn 
+              ? 'bg-red-500 hover:bg-red-600 border-red-500' 
+              : 'bg-green-500 hover:bg-green-600 border-green-500'
+          }`}
+        >
+          {isClockedIn ? 'Clock Out' : 'Clock In'}
+        </Button>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+          <div className="text-center">
+            <div className="text-lg font-bold text-gray-900">8:30 AM</div>
+            <div className="text-xs text-gray-500">Start Time</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-gray-900">5:30 PM</div>
+            <div className="text-xs text-gray-500">End Time</div>
+          </div>
+        </div>
       </div>
-      <button
-        className={`px-6 py-2 rounded-xl font-medium text-white shadow transition-all duration-300 ${
-          isClockedIn
-            ? 'bg-red-600 hover:bg-red-700'
-            : 'bg-green-600 hover:bg-green-700'
-        }`}
-        onClick={handleClockInOut}
-      >
-        {isClockedIn ? 'Punch Out' : 'Punch In'}
-      </button>
-    </div>
+    </Card>
   );
 };
 
